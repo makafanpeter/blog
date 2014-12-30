@@ -56,7 +56,7 @@ class Blog(db.Model):
 class User(db.Model):
     username = db.StringProperty(required = True)
     password = db.StringProperty(required = True)
-    email = db.StringProperty(required = True)
+    email = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
     
@@ -179,9 +179,9 @@ class Signup(BaseHandler):
                 params['user_exist'] = "That user already exists."
                 self.render('signup.html', **params)
             else:
-                password_salted = make_pw_hash(username,password)
                 user = User(username = username, password = password_salted, email = email)
                 user.put()
+                password_salted = make_pw_hash(username,password)
                 encrypted = make_secure_val(username)
                 self.response.headers.add_header('Set-Cookie', 'name=%s; Path=/'%str(encrypted))
                 self.redirect('/welcome')#+ username)
