@@ -22,6 +22,7 @@ import string
 import hashlib
 import hmac
 import logging
+import time
 
 import webapp2
 import jinja2
@@ -179,10 +180,12 @@ class Signup(BaseHandler):
                 params['user_exist'] = "That user already exists."
                 self.render('signup.html', **params)
             else:
+                password_salted = make_pw_hash(username,password)
                 user = User(username = username, password = password_salted, email = email)
                 user.put()
-                password_salted = make_pw_hash(username,password)
-                encrypted = make_secure_val(username)
+                #time.sleep(3)
+                user_id = user.key().id()
+                encrypted = make_secure_val(str(user_id))
                 self.response.headers.add_header('Set-Cookie', 'name=%s; Path=/'%str(encrypted))
                 self.redirect('/welcome')#+ username)
 
